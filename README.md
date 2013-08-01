@@ -16,6 +16,7 @@ How to configure the environment:
 (5)Initialize database(only need be done at the first time):
    
    a. Create a new user "poem" and grant all permission to him.
+   
    b. Create a new database "poem", owner is the new created user "poem". the script is as following, you also can create it in pgAdmin tool.
    CREATE DATABASE poem
   WITH OWNER = poem
