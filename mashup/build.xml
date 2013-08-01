@@ -5,7 +5,6 @@
 	<!-- Load additional properties -->
 	<property file="build.properties"/>
 	<property name="oryx.project" value="oryx"/>
-	<property name="deployment.dir" value="C:\Program Files\Apache Software Foundation\Tomcat 6.0\webapps"/>
 	<property name="conf.dir" value="mashup\etc"/>
 	<property name="web.content" value="mashup\web"/>
 	<property name="dist.dir" value="mashup\dist"/>

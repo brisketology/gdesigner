@@ -54,7 +54,7 @@ public class Repository2Handler extends  HandlerBase {
 //				"core/contextPlugin",
 //				};
 
-		String[] stylesheet_links 	= {"openid", "repository", "model_properties"};
+		String[] stylesheet_links 	= {"repository", "model_properties"};
 		String stylesheet_ie_fix 	= "repository_ie_fixes";
 		
 		String backend_path = "/backend";
