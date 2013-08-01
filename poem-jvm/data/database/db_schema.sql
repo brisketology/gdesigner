@@ -21,10 +21,10 @@ ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO poem;
 -- Name: plpythonu; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: poem
 --
 
-CREATE PROCEDURAL LANGUAGE plpythonu;
+CREATE PROCEDURAL LANGUAGE plpython3u;
 
 
-ALTER PROCEDURAL LANGUAGE plpythonu OWNER TO poem;
+ALTER PROCEDURAL LANGUAGE plpython3u OWNER TO poem;
 
 SET search_path = public, pg_catalog;
 
@@ -77,7 +77,7 @@ CREATE FUNCTION parent(hierarchy text) RETURNS text
  # Returns path to parent item
  return poem_path(hierarchy)[-2]
  $$
-    LANGUAGE plpythonu IMMUTABLE;
+    LANGUAGE plpython3u IMMUTABLE;
 
 
 ALTER FUNCTION public.parent(hierarchy text) OWNER TO poem;
@@ -464,7 +464,7 @@ CREATE FUNCTION child_position(hierarchy text) RETURNS integer
  local = path[current][len(path[parent]):] # == current-parent
  return decode_position(local)
  $$
-    LANGUAGE plpythonu IMMUTABLE;
+    LANGUAGE plpython3u IMMUTABLE;
 
 
 ALTER FUNCTION public.child_position(hierarchy text) OWNER TO poem;
@@ -500,7 +500,7 @@ CREATE FUNCTION decode_position(code text) RETURNS integer
  if offset == 3:
  	return 3968 + digits[0] * 62 * 62 + digits[1] * 62 + digits[2]
  $$
-    LANGUAGE plpythonu IMMUTABLE;
+    LANGUAGE plpython3u IMMUTABLE;
 
 
 ALTER FUNCTION public.decode_position(code text) OWNER TO poem;
@@ -538,7 +538,7 @@ CREATE FUNCTION encode_position(pos integer) RETURNS text
  
  return encode_pos(pos)
  $$
-    LANGUAGE plpythonu IMMUTABLE;
+    LANGUAGE plpython3u IMMUTABLE;
 
 
 ALTER FUNCTION public.encode_position(pos integer) OWNER TO poem;
@@ -803,7 +803,7 @@ CREATE FUNCTION poem_path(hierarchy text) RETURNS SETOF text
  		position += 2*tilde_count;
  	return all
  $$
-    LANGUAGE plpythonu IMMUTABLE;
+    LANGUAGE plpython3u IMMUTABLE;
 
 
 ALTER FUNCTION public.poem_path(hierarchy text) OWNER TO poem;
@@ -835,9 +835,9 @@ CREATE FUNCTION work_around_path(hierarchy text) RETURNS SETOF text
  				all.append(hierarchy[:position+2*tilde_count])
  			position += 2*tilde_count;
  		return all
-   return poem_path(hierarchy)[2:-1]
+   #return poem_path(hierarchy)[2:-1]
  $$
-    LANGUAGE plpythonu IMMUTABLE;
+    LANGUAGE plpython3u IMMUTABLE;
 
 
 ALTER FUNCTION public.work_around_path(hierarchy text) OWNER TO poem;
@@ -1053,144 +1053,110 @@ ALTER TABLE representation ALTER COLUMN id SET DEFAULT nextval('representation_i
 -- Data for Name: comment; Type: TABLE DATA; Schema: public; Owner: poem
 --
 
-COPY comment (id, subject_id, title, content) FROM stdin;
-\.
+
 
 
 --
 -- Data for Name: content; Type: TABLE DATA; Schema: public; Owner: poem
 --
 
-COPY content (id, erdf, svg, png_large, png_small) FROM stdin;
-\.
+
 
 
 --
 -- Data for Name: friend; Type: TABLE DATA; Schema: public; Owner: poem
 --
 
-COPY friend (id, subject_id, friend_id, model_count) FROM stdin;
-\.
 
 
 --
 -- Data for Name: identity; Type: TABLE DATA; Schema: public; Owner: poem
 --
-
-COPY identity (id, uri) FROM stdin;
-0	
-1	root
-2	public
-3	groups
-4	ownership
-\.
-
+insert into identity values(0,"");
+insert into identity values(1,'root');
+insert into identity values(2,'public');
+insert into identity values(3,'groups');
+insert into identity values(4,'ownership');
 
 --
 -- Data for Name: interaction; Type: TABLE DATA; Schema: public; Owner: poem
 --
-
-COPY interaction (id, subject, subject_descend, object, object_self, object_descend, object_restrict_to_parent, scheme, term) FROM stdin;
-1	U2	t	U2	f	t	t	http://b3mn.org/http	owner
-\.
-
+insert into interaction (id, subject, subject_descend, object, object_self, object_descend, object_restrict_to_parent, scheme, term) values(1,'U2',true,'U2',false,true,true,'http://b3mn.org/http','owner');
 
 --
 -- Data for Name: model_rating; Type: TABLE DATA; Schema: public; Owner: poem
 --
 
-COPY model_rating (id, subject_id, object_id, score) FROM stdin;
-\.
-
-
 --
 -- Data for Name: plugin; Type: TABLE DATA; Schema: public; Owner: poem
 --
+insert into plugin (rel, title, description, java_class, is_export) values('self','ModelHandler','Open model in the editor','org.b3mn.poem.handler.ModelHandler',true);
+insert into plugin (rel, title, description, java_class, is_export) values('repository','RepositoryHandler','Returns the Repository base','org.b3mn.poem.handler.RepositoryHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('model_types','ModelHandler','Open model in the editor','org.b3mn.poem.handler.ModelHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('model','CollectionHandler','Open model in the editor','org.b3mn.poem.handler.CollectionHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('new','NewModelHandler','Open model in the editor','org.b3mn.poem.handler.NewModelHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('info','InfoHandler','edit info','org.b3mn.poem.handler.InfoHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('access','AccessHandler','edit access','org.b3mn.poem.handler.AccessHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('info-access','MetaHandler','About','org.b3mn.poem.handler.MetaHandler',true);
+insert into plugin (rel, title, description, java_class, is_export) values('svg','ImageRenderer','Model as SVG','org.b3mn.poem.handler.ImageRenderer',true);
+insert into plugin (rel, title, description, java_class, is_export) values('pdf','PdfRenderer','Model as PDF','org.b3mn.poem.handler.PdfRenderer',true);
+insert into plugin (rel, title, description, java_class, is_export) values('png','PngRenderer','Model as PNG','org.b3mn.poem.handler.PngRenderer',true);
+insert into plugin (rel, title, description, java_class, is_export) values('rdf','RdfExporter','Model as RDF','org.b3mn.poem.handler.RdfExporter',true);
+insert into plugin (rel, title, description, java_class, is_export) values('login','OpenID 2.0 Login','Handles the login and stores OpenID attributes in the database','org.b3mn.poem.handler.LoginHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('user','UserHandler','Manages user meta data','org.b3mn.poem.handler.UserHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('repository2','Repository RELOADED','Returns initial Html page for the new repository','org.b3mn.poem.handler.Repository2Handler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('meta','Model Info Handler','Handles Requests from Repository2  concerning object meta data','org.b3mn.poem.handler.ModelInfoHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('tags','Tag Handler','Handles all requests concerning model tagging','org.b3mn.poem.handler.TagHandler',false);
+insert into plugin (rel, title, description, java_class, is_export) values('filter','Filter Handler','Handles client request for server filter','org.b3mn.poem.handler.SortFilterHandler',false);
 
-COPY plugin (rel, title, description, java_class, is_export) FROM stdin;
-/self	ModelHandler	Open model in the editor	org.b3mn.poem.handler.ModelHandler	t
-/repository	RepositoryHandler	Returns the Repository base	org.b3mn.poem.handler.RepositoryHandler	f
-/model_types	ModelHandler	Open model in the editor	org.b3mn.poem.handler.ModelHandler	f
-/model	CollectionHandler	Open model in the editor	org.b3mn.poem.handler.CollectionHandler	f
-/new	NewModelHandler	Open model in the editor	org.b3mn.poem.handler.NewModelHandler	f
-/info	InfoHandler	edit info	org.b3mn.poem.handler.InfoHandler	f
-/access	AccessHandler	edit access	org.b3mn.poem.handler.AccessHandler	f
-/info-access	MetaHandler	About	org.b3mn.poem.handler.MetaHandler	t
-/svg	ImageRenderer	Model as SVG	org.b3mn.poem.handler.ImageRenderer	t
-/pdf	PdfRenderer	Model as PDF	org.b3mn.poem.handler.PdfRenderer	t
-/png	PngRenderer	Model as PNG	org.b3mn.poem.handler.PngRenderer	t
-/rdf	RdfExporter	Model as RDF	org.b3mn.poem.handler.RdfExporter	t
-/login	OpenID 2.0 Login	Handles the login and stores OpenID attributes in the database	org.b3mn.poem.handler.LoginHandler	f
-/user	UserHandler	Manages user meta data	org.b3mn.poem.handler.UserHandler	f
-/repository2	Repository RELOADED	Returns initial Html page for the new repository	org.b3mn.poem.handler.Repository2Handler	f
-/meta	Model Info Handler	Handles Requests from Repository2 concerning object meta data	org.b3mn.poem.handler.ModelInfoHandler	f
-/tags	Tag Handler	Handles all requests concerning model tagging	org.b3mn.poem.handler.TagHandler	f
-/filter	Filter Handler	Handles client request for server filter	org.b3mn.poem.handler.SortFilterHandler	f
-\.
 
 
 --
 -- Data for Name: representation; Type: TABLE DATA; Schema: public; Owner: poem
 --
 
-COPY representation (id, ident_id, mime_type, language, title, summary, created, updated, type) FROM stdin;
-\.
-
 
 --
 -- Data for Name: schema_info; Type: TABLE DATA; Schema: public; Owner: poem
 --
+insert into schema_info (version) values(5);
 
-COPY schema_info (version) FROM stdin;
-5
-\.
 
 
 --
 -- Data for Name: setting; Type: TABLE DATA; Schema: public; Owner: poem
 --
-
-COPY setting (subject_id, id, key, value) FROM stdin;
-0	1	UserManager.DefaultCountryCode	us
-0	2	UserManager.DefaultLanguageCode	en
-\.
-
+insert into setting (subject_id, id, key, value) values(0,1,'UserManager.DefaultCountryCode','us');
+insert into setting (subject_id, id, key, value) values(0,2,'UserManager.DefaultLanguageCode','en');
 
 --
 -- Data for Name: structure; Type: TABLE DATA; Schema: public; Owner: poem
 --
+insert into structure (hierarchy, ident_id) values('U',1);
+insert into structure (hierarchy, ident_id) values('U1',2);
+insert into structure (hierarchy, ident_id) values('U2',4);
+insert into structure (hierarchy, ident_id) values('U3',3);
 
-COPY structure (hierarchy, ident_id) FROM stdin;
-U	1
-U1	2
-U2	4
-U3	3
-\.
 
 
 --
 -- Data for Name: subject; Type: TABLE DATA; Schema: public; Owner: poem
 --
+insert into subject (ident_id, nickname, email, fullname, dob, gender, postcode, first_login, last_login, login_count, language_code, country_code, password, visibility) values(2,'\N','\N','\N','\N','\N','\N','2008-01-01','2008-01-01',0,'\N','\N','\N','\N',);
 
-COPY subject (ident_id, nickname, email, fullname, dob, gender, postcode, first_login, last_login, login_count, language_code, country_code, password, visibility) FROM stdin;
-2	\N	\N	\N	\N	\N	\N	2008-01-01	2008-01-01	0	\N	\N	\N	\N
-\.
+
 
 
 --
 -- Data for Name: tag_definition; Type: TABLE DATA; Schema: public; Owner: poem
 --
 
-COPY tag_definition (id, subject_id, name) FROM stdin;
-\.
 
 
 --
 -- Data for Name: tag_relation; Type: TABLE DATA; Schema: public; Owner: poem
 --
 
-COPY tag_relation (id, tag_id, object_id) FROM stdin;
-\.
 
 
 --
